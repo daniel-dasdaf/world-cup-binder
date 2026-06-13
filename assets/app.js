@@ -1,5 +1,5 @@
 const binder = [
-    { code: "FWC", team: "FWC", stickers: Array.from({length: 12}, (_, i) => ({ id: String(i), owned: false })) },
+    { code: "FWC", team: "FWC", stickers: Array.from({length: 13}, (_, i) => ({ id: String(i), owned: false })) },
 
     { code: "MEX", team: "Mexico", stickers: Array.from({length: 20}, (_, i) => ({ id: String(i+1), owned: false })) },
     { code: "RSA", team: "South Africa", stickers: Array.from({length: 20}, (_, i) => ({ id: String(i+1), owned: false })) },
