@@ -15,8 +15,9 @@
         <input class="border-2 border-[#e2e2e2] p-[10px] rounded-xl w-full mb-[10px]" id="searchInput" placeholder="Search sticker (e.g. MEX1)" />
         <div class="text-center" id="searchResult"></div>
     </div>
-    <div class="p-[10px]">
-        <button  class="text-center w-full p-[10px] bg-[#e2e2e2] rounded-xl" id="missingBtn" class="">Show Missing</button>
+    <div class="p-[10px] flex flex-row gap-[10px]">
+        <button  class="text-center w-full p-[10px] bg-[#e2e2e2] rounded-xl" id="missingBtn">Show Missing</button>
+        <button  class="text-center w-full max-w-[100px] p-[10px] bg-[green] text-white rounded-xl" id="openAddPopup">Add</button>
     </div>
 
     
@@ -33,7 +34,18 @@
 
             <h2 class="text-xl font-bold mb-3">Missing Stickers</h2>
 
-            <div id="modalContent"></div>
+            <div id="modalContent" class="flex flex-wrap gap-[10px]"></div>
+        </div>
+    </div>
+    <div id="popup" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-white p-4 rounded w-[300px] flex flex-col gap-[5px]">
+            
+            <input id="stickerInput" placeholder="e.g. MEX1" class="border-2 border-[#e2e2e2] p-[10px] rounded-xl w-full mb-[15px]" />
+
+            <button id="addStickerBtn" class="w-full border p-2 rounded-xl"> Add </button>
+
+            <button id="closePopup" class="w-full mt-2 text-sm"> Close </button>
+
         </div>
     </div>
 
@@ -52,23 +64,14 @@
 
             const found = findStickerByCode(value);
 
-            if (!found) {
+            if (!found || !found.sticker) {
                 result.innerHTML = "Not found";
                 return;
             }
 
-            if (found.type === "fwc") {
-                result.innerHTML = `
-                🏆 FWC: ${found.name} <br/>
-                ${found.owned ? "Owned" : "Missing"}
+            result.innerHTML = `
+                ${found.sticker.owned ? "✅ Owned" : "❌ Missing"}
                 `;
-            } else {
-                result.innerHTML = `
-                ${found.team} (${found.code})<br/>
-                ${found.name} <br/>
-                ${found.owned ? "✅ Owned" : "❌ Missing"}
-                `;
-            }
         });
 
         const modal = document.getElementById("modal");
@@ -83,9 +86,8 @@
                 modalContent.innerHTML = "🎉 You completed everything!";
             } else {
                 modalContent.innerHTML = missing.map(item => `
-                <div class="border p-2 rounded mb-2">
-                    <strong>${item.code}</strong> - ${item.name}<br/>
-                    <small>${item.type}</small>
+                <div class="flex-1 border p-2 rounded mb-2">
+                    <strong>${item.code}</strong><br/>
                 </div>
                 `).join("");
             }
@@ -100,6 +102,40 @@
             if (e.target === modal) {
                 modal.classList.add("hidden");
             }
+        });
+
+        const popup = document.getElementById("popup");
+        const openBtn = document.getElementById("openAddPopup");
+        const closeBtn = document.getElementById("closePopup");
+
+        openBtn.addEventListener("click", () => {
+            popup.classList.remove("hidden");
+        });
+
+        closeBtn.addEventListener("click", () => {
+            popup.classList.add("hidden");
+        });
+
+        const stickerInput = document.getElementById("stickerInput");
+        const addBtn = document.getElementById("addStickerBtn");
+
+        addBtn.addEventListener("click", () => {
+            const code = stickerInput.value;
+            const result = findStickerByCode(code);
+            
+            console.log(result)
+            if (!result || !result.sticker) {
+                alert("Sticker not found: " + code);
+                return;
+            }
+            result.sticker.owned = true;
+
+            saveState(buildState(binder));
+
+            popup.classList.add("hidden");
+            stickerInput.value = "";
+
+            renderBinder();
         });
     </script>
 </body>
