@@ -49,6 +49,16 @@
         </div>
     </div>
 
+    <div id="action" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-white p-4 rounded-md w-[300px] text-center">
+            <p id="modalText" class="mb-4 font-bold"></p>
+
+            <div class="flex gap-2 justify-center">
+                <button id="modalYes" class="px-3 py-1 bg-green-600 text-white rounded">Yes</button>
+                <button id="modalNo" class="px-3 py-1 bg-gray-300 rounded">No</button>
+            </div>
+        </div>
+    </div>
     <script>
 
         const input = document.getElementById("searchInput");
@@ -137,6 +147,34 @@
 
             renderBinder();
         });
+
+
+        // Action
+        const action = document.getElementById("action");
+        const modalText = document.getElementById("modalText");
+        const modalYes = document.getElementById("modalYes");
+        const modalNo = document.getElementById("modalNo");
+
+        let pendingSticker = null;
+        let pendingCard = null;
+
+        function openAction(sticker, card, onConfirm) {
+            pendingSticker = sticker;
+            pendingCard = card;
+
+            modalText.textContent = "Mark this sticker as owned?";
+            action.classList.remove("hidden");
+
+            modalYes.onclick = () => {
+                action.classList.add("hidden");
+                onConfirm(true);
+            };
+
+            modalNo.onclick = () => {
+                action.classList.add("hidden");
+                onConfirm(false);
+            };
+        }
     </script>
 </body>
 </html>

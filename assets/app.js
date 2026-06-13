@@ -1,5 +1,5 @@
 const binder = [
-    { code: "FWC", team: "FWC", stickers: Array.from({length: 12}, (_, i) => ({ id: String(i+1), owned: false })) },
+    { code: "FWC", team: "FWC", stickers: Array.from({length: 12}, (_, i) => ({ id: String(i), owned: false })) },
 
     { code: "MEX", team: "Mexico", stickers: Array.from({length: 20}, (_, i) => ({ id: String(i+1), owned: false })) },
     { code: "RSA", team: "South Africa", stickers: Array.from({length: 20}, (_, i) => ({ id: String(i+1), owned: false })) },
@@ -184,14 +184,30 @@ function renderBinder() {
         const label = sticker.id; // ONLY NUMBER
 
         const card = createCard(label, sticker.owned, () => {
+           if (sticker.owned) {
+                openAction(sticker, card, (confirmed) => {
+                    if (!confirmed) return;
+
+                    // ✅ THIS is what you were missing
+                    sticker.owned = false;
+                    saveState(buildState(binder));
+
+                    card.classList.add("opacity-40");
+                    card.classList.remove("bg-[#2f6e58]", "text-[white]");
+
+                    updateProgress();
+                });
+
+                return;
+            }
 
             sticker.owned = !sticker.owned;
+
             saveState(buildState(binder));
 
-            // update UI only
             card.classList.toggle("opacity-40");
-            card.classList.toggle("border-[#2f6e58]");
-            card.classList.toggle("text-[#2f6e58]");
+            card.classList.toggle("bg-[#2f6e58]");
+            card.classList.toggle("text-[white]");
 
             updateProgress();
         });
