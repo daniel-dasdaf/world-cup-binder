@@ -20,6 +20,11 @@
         <button  class="text-center w-full max-w-[100px] p-[10px] bg-[green] text-white rounded-xl" id="openAddPopup">Add</button>
     </div>
 
+    <div class="p-[10px] flex flex-row gap-[10px]">
+        <button class="text-center w-full p-[10px] bg-[#f2f2f2] rounded-xl" id="exporter">Exporter</button>
+        <input class="text-center w-full p-[10px] bg-[#f2f2f2] rounded-xl"  type="file" id="importFile" accept=".json">
+    </div>
+
     
     <div id="app"></div>
 
@@ -175,6 +180,51 @@
                 onConfirm(false);
             };
         }
+
+
+        document.getElementById("exporter").addEventListener("click", () => {
+            console.log(btoa(JSON.stringify(buildState(binder))))
+            const state = buildState(binder);
+
+            const blob = new Blob(
+                [JSON.stringify(state, null, 2)],
+                { type: "application/json" }
+            );
+
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "panini-2026-collection.json";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        });
+
+        document.getElementById("importFile").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                try {
+                    const state = JSON.parse(event.target.result);
+
+                    saveState(state);
+                    applyState(binder, state);
+
+                    renderBinder();
+
+                    alert("Collection imported successfully!");
+                } catch {
+                    alert("Invalid collection file.");
+                }
+            };
+
+            reader.readAsText(file);
+        });
     </script>
 </body>
 </html>
